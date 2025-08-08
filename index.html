@@ -4,15 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KidBeat – Beatmaker</title>
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="manifest" href="./manifest.webmanifest">
     <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
     <style>
       :root { --indigo:#4f46e5; --bg:#f8fafc; --card:#ffffff; --muted:#64748b; }
-      *{ box-sizing: border-box; }
-      body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background: linear-gradient(180deg,#eef2ff,#fff); }
+      *{ box-sizing: border-box; } body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background: linear-gradient(180deg,#eef2ff,#fff); }
       .container { max-width: 1080px; margin: 0 auto; padding: 16px; }
       .title { display:flex; align-items:center; gap:10px; font-weight:700; font-size: 24px; margin: 8px 0 16px; }
       .card { background: var(--card); border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 12px; }
@@ -33,21 +32,17 @@
       .cell.active { outline:2px solid #a5b4fc; background:#eef2ff; }
       .cell.now { box-shadow: 0 0 0 2px var(--indigo) inset; }
       .help { color: var(--muted); font-size: 13px; margin-top: 8px; }
-      select, .small { font-size: 14px; }
-      .flex-grow { flex: 1 1 auto; }
-      .spacer { flex: 1 1 8px; }
-      .vol { width: 140px; }
+      select, .small { font-size: 14px; } .spacer { flex: 1 1 8px; } .vol { width: 140px; }
       .footer { font-size:12px; color:#64748b; margin-top:10px; }
-      @media (max-width:720px){ .slider{ width:130px; } .vol{ width:120px; } }
     </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="./src/main.jsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(console.error);
+          navigator.serviceWorker.register('./sw.js').catch(console.error);
         });
       }
     </script>

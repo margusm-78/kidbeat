@@ -1,25 +1,13 @@
-# KidBeat – Ready-to-Deploy PWA (Vite + React)
+# KidBeat – Ready-to-Deploy PWA (FIXED paths)
 
-This project is pre-configured to deploy on **Vercel** and install on iPad as a PWA.
+This project uses **relative** imports in `index.html` so Vercel resolves correctly.
 
-## Local Setup
-```bash
+## Local
 npm install
 npm run dev
-# Build
 npm run build
-npx serve -s dist   # optional preview
-```
 
-## Deploy to Vercel
-- Push this folder to a public GitHub repo.
-- Go to https://vercel.com/new and import the repo.
-- Framework: **Vite** | Build: `npm run build` | Output: `dist`
-- Vercel will use the included `vercel.json` for SPA routing.
-- Open on iPad Safari → Share → **Add to Home Screen**.
-
-## Features
-- 4 tracks × 16 steps, tempo, swing, per-track volume
-- Save/Load patterns via localStorage
-- WAV export via OfflineAudioContext
-- Works offline via Service Worker
+## Deploy (Vercel)
+- Push to GitHub, e.g. margusm-78/kidbeat
+- Import at https://vercel.com/new (Vite preset)
+- Build: npm run build | Output: dist
