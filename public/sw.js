@@ -1,5 +1,5 @@
 const CACHE_NAME = "kidbeat-cache-v1";
-const CORE_ASSETS = ["./","./index.html","./manifest.webmanifest","./icons/icon-192.png","./icons/icon-512.png"];
+const CORE_ASSETS = ["/","/index.html","/manifest.webmanifest","/icons/icon-192.png","/icons/icon-512.png"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE_NAME).then((c)=>c.addAll(CORE_ASSETS)).then(()=>self.skipWaiting()));
 });
