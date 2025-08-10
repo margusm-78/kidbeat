@@ -1,0 +1,430 @@
+/* KidBeat - iPad Optimized Styles */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  /* Prevent zoom on input focus for iPad */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 10px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: clamp(16px, 3vw, 24px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 12px);
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.small {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* Form Elements - iPad Optimized */
+input[type="text"] {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px; /* Prevents zoom on iOS */
+  background: white;
+  min-width: 180px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  outline: none;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: #667eea;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:active {
+  transform: scale(1.1);
+}
+
+.vol {
+  min-width: 60px;
+}
+
+select {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+  min-width: 160px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Buttons - Touch Optimized */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f3f4f6;
+  color: #374151;
+  min-height: 48px; /* iOS touch target */
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 18px;
+  padding: 16px 24px;
+}
+
+.danger {
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+  color: white;
+  font-size: 18px;
+  padding: 16px 24px;
+}
+
+/* Grid Layout */
+.grid {
+  margin: 20px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: 140px repeat(16, 1fr);
+  gap: 4px;
+  min-width: 900px;
+  align-items: center;
+}
+
+.step-num {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  padding: 8px 4px;
+  background: rgba(243, 244, 246, 0.5);
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.track-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Drum Cells - Optimized for Touch */
+.cell {
+  aspect-ratio: 1;
+  min-height: 48px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.cell:hover {
+  border-color: #d1d5db;
+  transform: scale(1.02);
+}
+
+.cell:active {
+  transform: scale(0.98);
+}
+
+.cell.active {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border-color: #d97706;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cell.active:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.cell.now {
+  animation: pulse 0.15s ease-in-out;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+  border-color: #ef4444;
+}
+
+.cell.active.now {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4), inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Help and Footer */
+.help {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #1e40af;
+  line-height: 1.5;
+}
+
+.footer {
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: auto;
+  padding: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .card {
+    padding: 16px;
+  }
+  
+  .row {
+    gap: 8px;
+  }
+  
+  .steps {
+    grid-template-columns: 120px repeat(16, 1fr);
+    min-width: 800px;
+    gap: 3px;
+  }
+  
+  .cell {
+    min-height: 44px;
+  }
+  
+  button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .primary, .danger {
+    font-size: 16px;
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .steps {
+    grid-template-columns: 100px repeat(16, 1fr);
+    min-width: 700px;
+    gap: 2px;
+  }
+  
+  .cell {
+    min-height: 40px;
+  }
+  
+  .track-name {
+    font-size: 12px;
+  }
+  
+  .step-num {
+    font-size: 10px;
+    padding: 6px 2px;
+  }
+}
+
+/* iPad Landscape Optimizations */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .container {
+    padding: 20px 40px;
+  }
+  
+  .steps {
+    grid-template-columns: 160px repeat(16, 1fr);
+    gap: 6px;
+  }
+  
+  .cell {
+    min-height: 52px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: rgba(17, 24, 39, 0.95);
+    color: #f9fafb;
+  }
+  
+  .label {
+    color: #d1d5db;
+  }
+  
+  .small {
+    color: #9ca3af;
+  }
+  
+  input[type="text"], select {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  input[type="text"]:focus, select:focus {
+    border-color: #667eea;
+  }
+  
+  .slider {
+    background: #4b5563;
+  }
+  
+  .step-num {
+    background: rgba(75, 85, 99, 0.5);
+    color: #d1d5db;
+  }
+  
+  .track-name {
+    color: #f9fafb;
+  }
+  
+  .cell {
+    background: #374151;
+    border-color: #4b5563;
+  }
+  
+  .cell:hover {
+    border-color: #6b7280;
+  }
+  
+  button {
+    background: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .help {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+  }
+}
