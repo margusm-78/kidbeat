@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
-// KidBeat – full drop-in App.jsx (PROD-READY: continuous playback & Vercel-friendly)
-// - Robust scheduler with drift catch-up (handles background tab throttling)
-// - Reliable continuous playback using AudioContext time (not wall clock)
-// - iOS audio unlock on Play
-// - Keeps save/load, export WAV, tempo, swing, per-track volume
-// - Page Visibility handling to avoid huge catch-up bursts after tab sleep
-
 const STEPS = 16
 const DEFAULT_BPM = 100
 const TRACKS = [
@@ -24,7 +17,6 @@ function createAudioEngine () {
   return { ctx, master }
 }
 
-// === Drum voices (connect to `master`) ===
 function playKick (ctx, master, when, velocity = 1) {
   const osc = ctx.createOscillator()
   const gain = ctx.createGain()
@@ -39,7 +31,6 @@ function playKick (ctx, master, when, velocity = 1) {
   osc.stop(when + 0.32)
 }
 
-// Reusable noise-based voices accept an optional shared noise buffer
 function playSnare (ctx, master, when, velocity = 1, noiseBuffer) {
   const noiseSrc = ctx.createBufferSource()
   if (!noiseBuffer) {
@@ -265,13 +256,11 @@ export default function App () {
         await ctx.resume()
       }
 
-      const secondsPerBeat = 60 / bpm
-      const stepDur = secondsPerBeat / 4
       startTimeRef.current = ctx.currentTime + 0.05
       nextNoteTimeRef.current = startTimeRef.current
       stepRef.current = 0
-      isPlayingRef.current = True
-      setIsPlaying(True)
+      isPlayingRef.current = true
+      setIsPlaying(true)
 
       if (timerRef.current) window.clearInterval(timerRef.current)
       timerRef.current = window.setInterval(scheduler, 25)
