@@ -1,29 +1,19 @@
 {
-  "name": "kidbeat-drum-machine",
-  "version": "1.0.0",
-  "description": "A friendly drum machine for kids - iPad optimized",
-  "main": "src/App.js",
+  "name": "beatmaker-react",
+  "private": true,
+  "version": "0.0.2",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "export": "next export"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "eslint": "^8.0.0",
-    "eslint-config-next": "^14.0.0"
-  },
-  "keywords": ["drum machine", "music", "kids", "web audio", "iPad"],
-  "author": "Your Name",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/kidbeat-drum-machine.git"
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
   }
 }
