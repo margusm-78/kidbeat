@@ -198,6 +198,7 @@ export default function App () {
   const timerRef = useRef(null)
   const nextNoteTimeRef = useRef(0)
   const stepRef = useRef(0)
+  const isPlayingRef = useRef(false)
 
   // Shared white-noise buffer (per sampleRate) for snare/hat/clap
   const sharedNoise = useMemo(() => {
@@ -226,13 +227,13 @@ export default function App () {
 
   // FIXED: Proper scheduler that continues looping
   const scheduler = () => {
-    if (!isPlaying) return
+    if (!isPlayingRef.current) return
 
     const secondsPerBeat = 60 / bpm
     const stepDur = secondsPerBeat / 4
     
     // Schedule all notes that need to be scheduled within the lookahead window
-    while (nextNoteTimeRef.current < ctx.currentTime + lookahead) {
+    while (nextNoteTimeRef.current < ctx.currentTime + lookahead && isPlayingRef.current) {
       let scheduleTime = nextNoteTimeRef.current
       
       // Apply swing to odd steps
@@ -268,6 +269,7 @@ export default function App () {
       // Initialize timing
       nextNoteTimeRef.current = ctx.currentTime + 0.05
       stepRef.current = 0
+      isPlayingRef.current = true
       setIsPlaying(true)
 
       // Clear any existing timer
@@ -284,6 +286,7 @@ export default function App () {
   const stop = () => {
     if (timerRef.current) window.clearInterval(timerRef.current)
     timerRef.current = null
+    isPlayingRef.current = false
     setIsPlaying(false)
     setCurrentStep(0)
   }
