@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
-// KidBeat – full drop-in App.jsx (noise-buffer reuse optimization)
-// - Fix: reuse memoized white-noise buffer per sampleRate to reduce CPU/GC
+// KidBeat – full drop-in App.jsx (FIXED: continuous playback)
+// - Fix: proper scheduler loop that continues playing
 // - Reliable single-step scheduler so playback advances every tick
 // - iOS audio unlock on Play
 // - Keeps save/load, export WAV, tempo, swing, per-track volume
@@ -224,18 +224,31 @@ export default function App () {
     })
   }
 
-  function nextStep () {
+  // FIXED: Proper scheduler that continues looping
+  const scheduler = () => {
+    if (!isPlaying) return
+
     const secondsPerBeat = 60 / bpm
     const stepDur = secondsPerBeat / 4
-    if (nextNoteTimeRef.current <= ctx.currentTime + lookahead) {
-      let t = nextNoteTimeRef.current
+    
+    // Schedule all notes that need to be scheduled within the lookahead window
+    while (nextNoteTimeRef.current < ctx.currentTime + lookahead) {
+      let scheduleTime = nextNoteTimeRef.current
+      
+      // Apply swing to odd steps
       if (swing > 0 && (stepRef.current % 2 === 1)) {
-        t += (swing / 100) * (stepDur / 3)
+        scheduleTime += (swing / 100) * (stepDur / 3)
       }
-      schedule(t, stepRef.current)
-      nextNoteTimeRef.current += stepDur
+      
+      // Schedule all drum hits for this step
+      schedule(scheduleTime, stepRef.current)
+      
+      // Update visual indicator
       setCurrentStep(stepRef.current)
+      
+      // Move to next step
       stepRef.current = (stepRef.current + 1) % STEPS
+      nextNoteTimeRef.current += stepDur
     }
   }
 
@@ -252,15 +265,16 @@ export default function App () {
         await ctx.resume()
       }
 
+      // Initialize timing
       nextNoteTimeRef.current = ctx.currentTime + 0.05
       stepRef.current = 0
       setIsPlaying(true)
 
-      // kick first tick immediately
-      nextStep()
-
+      // Clear any existing timer
       if (timerRef.current) window.clearInterval(timerRef.current)
-      timerRef.current = window.setInterval(nextStep, 25)
+      
+      // Start the scheduler loop
+      timerRef.current = window.setInterval(scheduler, 25)
     } catch (error) {
       console.error('Failed to start audio:', error)
       alert('Audio failed to start. Please try again.')
@@ -351,90 +365,331 @@ export default function App () {
   })())
 
   return (
-    <div className="container">
-      <div className="title">🥁 KidBeat – Friendly Beatmaker</div>
+    <div style={{ 
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      maxWidth: '900px',
+      margin: '0 auto',
+      padding: '20px',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      minHeight: '100vh'
+    }}>
+      <div style={{ 
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: '24px',
+        color: 'white',
+        textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+      }}>
+        🥁 KidBeat – Friendly Beatmaker
+      </div>
 
-      <div className="card">
-        <div className="row" style={{ marginBottom: 12 }}>
-          <span className="label">Beat Name</span>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-          <button onClick={savePattern}>💾 Save</button>
-          <button onClick={exportWav}>⬇️ Export WAV</button>
+      <div style={{ 
+        background: 'white',
+        borderRadius: '12px',
+        padding: '24px',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{ 
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '20px',
+          flexWrap: 'wrap'
+        }}>
+          <span style={{ fontWeight: '600' }}>Beat Name</span>
+          <input 
+            type="text" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)}
+            style={{
+              padding: '8px 12px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '6px',
+              fontSize: '14px'
+            }}
+          />
+          <button 
+            onClick={savePattern}
+            style={{
+              padding: '8px 16px',
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            💾 Save
+          </button>
+          <button 
+            onClick={exportWav}
+            style={{
+              padding: '8px 16px',
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            ⬇️ Export WAV
+          </button>
 
-          <span className="label">Tempo</span>
-          <input className="slider" type="range" min="60" max="160" step="1" value={bpm} onChange={(e) => setBpm(parseInt(e.target.value))} />
-          <span className="small">{bpm} BPM</span>
+          <span style={{ fontWeight: '600' }}>Tempo</span>
+          <input 
+            type="range" 
+            min="60" 
+            max="160" 
+            step="1" 
+            value={bpm} 
+            onChange={(e) => setBpm(parseInt(e.target.value))}
+            style={{ width: '100px' }}
+          />
+          <span style={{ fontSize: '12px' }}>{bpm} BPM</span>
 
-          <span className="label">Swing</span>
-          <input className="slider" type="range" min="0" max="100" step="1" value={swing} onChange={(e) => setSwing(parseInt(e.target.value))} />
-          <span className="small">{swing}%</span>
+          <span style={{ fontWeight: '600' }}>Swing</span>
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            step="1" 
+            value={swing} 
+            onChange={(e) => setSwing(parseInt(e.target.value))}
+            style={{ width: '100px' }}
+          />
+          <span style={{ fontSize: '12px' }}>{swing}%</span>
 
-          <span className="small" style={{ marginLeft: 'auto' }}>Audio: <b>{audioState}</b></span>
+          <span style={{ fontSize: '12px', marginLeft: 'auto' }}>
+            Audio: <b>{audioState}</b>
+          </span>
         </div>
 
-        <div className="grid">
-          <div className="steps">
-            <div></div>
-            {Array.from({ length: STEPS }, (_, i) => (
-              <div key={i} className="step-num" style={{ fontWeight: i % 4 === 0 ? 700 : 400 }}>{i + 1}</div>
-            ))}
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: '140px repeat(16, 1fr)',
+          gap: '4px',
+          marginBottom: '20px'
+        }}>
+          <div></div>
+          {Array.from({ length: STEPS }, (_, i) => (
+            <div 
+              key={i} 
+              style={{ 
+                textAlign: 'center',
+                fontSize: '12px',
+                fontWeight: i % 4 === 0 ? 700 : 400,
+                padding: '4px'
+              }}
+            >
+              {i + 1}
+            </div>
+          ))}
 
-            {TRACKS.map((t, r) => (
-              <React.Fragment key={t.id}>
-                <div>
-                  <div className="track-name">
-                    <span>{t.label}</span>
-                    <span className="dot" style={{ background: t.color }}></span>
-                  </div>
-                  <div className="row small" style={{ marginTop: 6 }}>
-                    <span>Vol</span>
-                    <input className="vol" type="range" min="0" max="1" step="0.05" value={volumes[r]} onChange={(e) => {
+          {TRACKS.map((t, r) => (
+            <React.Fragment key={t.id}>
+              <div style={{ padding: '8px 0' }}>
+                <div style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '6px'
+                }}>
+                  <span style={{ fontWeight: '600' }}>{t.label}</span>
+                  <div style={{ 
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    background: t.color
+                  }}></div>
+                </div>
+                <div style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '12px'
+                }}>
+                  <span>Vol</span>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="1" 
+                    step="0.05" 
+                    value={volumes[r]} 
+                    onChange={(e) => {
                       const val = parseFloat(e.target.value)
                       setVolumes(v => Object.assign([], v, { [r]: val }))
-                    }} />
-                    <button onClick={() => setAll(r, true)}>All</button>
-                    <button onClick={() => setAll(r, false)}>None</button>
-                  </div>
+                    }}
+                    style={{ width: '40px' }}
+                  />
+                  <button 
+                    onClick={() => setAll(r, true)}
+                    style={{
+                      padding: '2px 6px',
+                      fontSize: '10px',
+                      border: '1px solid #ccc',
+                      background: 'white',
+                      borderRadius: '3px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    All
+                  </button>
+                  <button 
+                    onClick={() => setAll(r, false)}
+                    style={{
+                      padding: '2px 6px',
+                      fontSize: '10px',
+                      border: '1px solid #ccc',
+                      background: 'white',
+                      borderRadius: '3px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    None
+                  </button>
                 </div>
+              </div>
 
-                {Array.from({ length: STEPS }, (_, c) => {
-                  const active = pattern[r][c]
-                  const isNow = isPlaying && c === currentStep
-                  const cls = 'cell' + (active ? ' active' : '') + (isNow ? ' now' : '')
-                  return (
-                    <button 
-                      key={c} 
-                      className={cls} 
-                      onClick={() => toggleCell(r, c)} 
-                      aria-label={`${t.label} step ${c + 1}`}
-                    ></button>
-                  )
-                })}
-              </React.Fragment>
-            ))}
-          </div>
+              {Array.from({ length: STEPS }, (_, c) => {
+                const active = pattern[r][c]
+                const isNow = isPlaying && c === currentStep
+                return (
+                  <button 
+                    key={c} 
+                    onClick={() => toggleCell(r, c)} 
+                    aria-label={`${t.label} step ${c + 1}`}
+                    style={{
+                      width: '100%',
+                      aspectRatio: '1',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '6px',
+                      background: active ? t.color : 'white',
+                      cursor: 'pointer',
+                      boxShadow: isNow ? '0 0 8px #3b82f6' : 'none',
+                      transform: active ? 'scale(0.9)' : 'scale(1)',
+                      transition: 'all 0.1s ease'
+                    }}
+                  ></button>
+                )
+              })}
+            </React.Fragment>
+          ))}
         </div>
 
-        <div className="row" style={{ marginTop: 12 }}>
+        <div style={{ 
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          flexWrap: 'wrap'
+        }}>
           {!isPlaying ? (
-            <button className="primary" onClick={start}>▶️ Play</button>
+            <button 
+              onClick={start}
+              style={{
+                padding: '12px 24px',
+                background: '#10b981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              ▶️ Play
+            </button>
           ) : (
-            <button className="danger" onClick={stop}>⏹ Stop</button>
+            <button 
+              onClick={stop}
+              style={{
+                padding: '12px 24px',
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              ⏹ Stop
+            </button>
           )}
-          <button onClick={randomize}>🎲 Surprise Beat</button>
-          <button onClick={clear}>🧽 Clear</button>
-          <div className="spacer"></div>
-          <select onChange={(e) => loadPattern(e.target.value)} defaultValue="">
+          <button 
+            onClick={randomize}
+            style={{
+              padding: '8px 16px',
+              background: '#f59e0b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            🎲 Surprise Beat
+          </button>
+          <button 
+            onClick={clear}
+            style={{
+              padding: '8px 16px',
+              background: '#6b7280',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            🧽 Clear
+          </button>
+          <div style={{ flex: 1 }}></div>
+          <select 
+            onChange={(e) => loadPattern(e.target.value)} 
+            defaultValue=""
+            style={{
+              padding: '8px 12px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '6px'
+            }}
+          >
             <option value="" disabled>Load Saved Beat</option>
             {savedNames.map(n => <option key={n} value={n}>{n}</option>)}
           </select>
-          <button onClick={() => deletePattern(name)}>🗑️ Delete Current</button>
+          <button 
+            onClick={() => deletePattern(name)}
+            style={{
+              padding: '8px 16px',
+              background: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            🗑️ Delete Current
+          </button>
         </div>
 
-        <div className="help">Tip: On iPad Safari, tap <b>Share</b> → <b>Add to Home Screen</b> to install. Your beats save on this device.</div>
+        <div style={{ 
+          marginTop: '20px',
+          padding: '12px',
+          background: '#f3f4f6',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#6b7280'
+        }}>
+          Tip: On iPad Safari, tap <b>Share</b> → <b>Add to Home Screen</b> to install. Your beats save on this device.
+        </div>
       </div>
 
-      <div className="footer">Privacy-friendly: no uploads, all audio is generated on-device.</div>
+      <div style={{ 
+        textAlign: 'center',
+        marginTop: '20px',
+        color: 'white',
+        fontSize: '14px'
+      }}>
+        Privacy-friendly: no uploads, all audio is generated on-device.
+      </div>
     </div>
   )
 }
